@@ -298,7 +298,7 @@ export default function () {
         <div className="py-6 flex flex-col  items-center justify-between text-center sm:text-left gap-3">
           
           <p className="text-sm text-white font-medium">
-            © 2024 MAR Transports. All rights reserved.
+            © 1960 MAR Transports. All rights reserved.
           </p>
 
           <p className="text-sm text-blue-100">

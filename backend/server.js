@@ -4,13 +4,13 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 
 // Route Imports
-import userRoutes from './routes/user.js';
-import adminRoutes from './routes/admin.js';
+import userRoutes from './routes/userRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import ShipmentsRoutes from './routes/Adminshipments.js';
-import contactRouter from './routes/contact.js';
-import adminAccountRouter from './routes/adminAccount.js';
-import adminNotificationsRouter from './routes/adminNotifications.js';
-import clientAccountRouter from './routes/clientAccount.js';
+import contactRouter from './routes/contactRoutes.js';
+import adminAccountRouter from './routes/adminAccountRoutes.js';
+import adminNotificationsRouter from './routes/adminNotificationsRoutes.js';
+import clientAccountRouter from './routes/clientAccountRoutes.js';
 import clientShipmentsRouter from './routes/clientShipments.js';
 import adminTrucksRouter from './routes/adminTruck.js'; // Fixed typo (adminTruck -> adminTrucks)
 import publicShipmentsRouter from './routes/publicShipments.js'; // <--- 1. IMPORT THIS

@@ -5,14 +5,16 @@ import {
   User, 
   MapPin, 
   Clock, 
+  Calendar, 
   Route, 
   Package, 
   AlertCircle,
   Phone,
   X,
+  Loader2,
   RefreshCw,
   Briefcase,
-  AlertTriangle // Imported for the yellow card
+  AlertTriangle 
 } from 'lucide-react';
 
 // --- CONFIG ---
@@ -24,6 +26,7 @@ interface DispatchItem {
   id: string; 
   truckId: string;
   driver: string;
+  driverPhone: string;
   route: string;
   cargo: string;
   startTime: string;
@@ -66,7 +69,7 @@ const DispatchModule: React.FC = () => {
   const [selectedShipmentMongoId, setSelectedShipmentMongoId] = useState<string | null>(null); 
   const [driverContactInfo, setDriverContactInfo] = useState<{name: string, phone: string} | null>(null);
 
-  // --- NEW: NOTIFICATION STATE ---
+  // --- NOTIFICATION STATE ---
   const [notification, setNotification] = useState<{type: 'warning' | 'error', message: string} | null>(null);
 
   // --- DATA STATE ---
@@ -87,7 +90,7 @@ const DispatchModule: React.FC = () => {
 
   const refreshAllData = async () => {
     setLoading(true);
-    setNotification(null); // Clear notifications on refresh
+    setNotification(null); 
     try {
       const config = getAuthHeader();
 
@@ -124,6 +127,7 @@ const DispatchModule: React.FC = () => {
         id: s.trackingId,
         truckId: s.assignedTruck?.truckNumber || 'N/A',
         driver: s.assignedTruck?.driverName || 'Unknown',
+        driverPhone: s.assignedTruck?.driverPhone || 'N/A',
         route: `${s.pickupLocation} - ${s.deliveryLocation}`,
         cargo: s.goodsType || 'General Cargo',
         startTime: new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -137,7 +141,7 @@ const DispatchModule: React.FC = () => {
       setDispatches(mappedActive);
 
     } catch (error: any) {
-      // Logic to handle fetch errors silently or via UI if needed
+      // Error handling
     } finally {
       setLoading(false);
     }
@@ -156,7 +160,7 @@ const DispatchModule: React.FC = () => {
   };
 
   const openAssignModal = (visualId: string, mongoId: string) => {
-    setNotification(null); // Clear previous error messages when opening modal
+    setNotification(null); 
     setSelectedShipmentId(visualId);
     setSelectedShipmentMongoId(mongoId);
     setIsAssignModalOpen(true);
@@ -164,7 +168,7 @@ const DispatchModule: React.FC = () => {
 
   const confirmAssignment = async (truck: TruckItem) => {
     if (!selectedShipmentMongoId) return;
-    setNotification(null); // Clear any previous notification
+    setNotification(null); 
 
     try {
       await axios.put(`${API_URL}/shipments/${selectedShipmentMongoId}/assign`, {
@@ -179,8 +183,6 @@ const DispatchModule: React.FC = () => {
       setSelectedTab('active'); 
 
     } catch (error) {
-      // --- MODIFIED: REMOVED CONSOLE/ALERT, ADDED UI STATE ---
-      // We set the notification state to trigger the yellow card in the UI
       setNotification({
         type: 'warning',
         message: 'Failed to assign: Truck maintainance is tomorrow.'
@@ -188,7 +190,7 @@ const DispatchModule: React.FC = () => {
     }
   };
 
-  const handleContactDriver = (driver: string, phone: string = "+91 99999 88888") => {
+  const handleContactDriver = (driver: string, phone: string) => {
     setDriverContactInfo({ name: driver, phone });
     setIsDriverModalOpen(true);
   };
@@ -271,7 +273,7 @@ const DispatchModule: React.FC = () => {
               {dispatches.map((dispatch) => (
                 <div key={dispatch.id} className="group bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300">
                   
-                  {/* CARD HEADER: Truck Info & Status */}
+                  {/* CARD HEADER */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-gray-100">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-blue-50 rounded-xl shrink-0">
@@ -296,9 +298,8 @@ const DispatchModule: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* ROUTE & CARGO BLOCK */}
+                  {/* ROUTE & CARGO */}
                   <div className="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                    {/* Route */}
                     <div>
                       <div className="flex items-center gap-2 mb-2 text-gray-400">
                           <Route className="w-4 h-4" />
@@ -308,8 +309,6 @@ const DispatchModule: React.FC = () => {
                         {dispatch.route}
                       </p>
                     </div>
-
-                    {/* Cargo */}
                     <div>
                       <div className="flex items-center gap-2 mb-2 text-gray-400">
                           <Package className="w-4 h-4" />
@@ -321,9 +320,8 @@ const DispatchModule: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* DETAILS GRID: Time, Client, Location */}
+                  {/* DETAILS GRID */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 mb-6">
-                    
                     {/* Start Time */}
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Start Time</span>
@@ -364,8 +362,8 @@ const DispatchModule: React.FC = () => {
                   {/* PROGRESS BAR */}
                   <div className="mb-6">
                     <div className="flex justify-between items-end mb-2">
-                       <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Shipment Progress</span>
-                       <span className="text-sm font-bold text-blue-600">{dispatch.progress}%</span>
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Shipment Progress</span>
+                        <span className="text-sm font-bold text-blue-600">{dispatch.progress}%</span>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                       <div 
@@ -380,7 +378,12 @@ const DispatchModule: React.FC = () => {
                   {/* ACTION FOOTER */}
                   <div className="flex justify-end pt-4 border-t border-gray-100">
                     <button 
-                      onClick={() => handleContactDriver(dispatch.driver)} 
+                      onClick={() => {
+                        // FIX: Look up the real phone number from the trucks array based on truckId
+                        const assignedTruck = trucks.find(t => t.id === dispatch.truckId);
+                        const phoneNumber = assignedTruck?.driverPhone || "N/A";
+                        handleContactDriver(dispatch.driver, dispatch.driverPhone);
+                      }} 
                       className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700 text-sm font-bold rounded-xl transition-all shadow-sm"
                     >
                       <Phone className="w-4 h-4" />
@@ -507,7 +510,6 @@ const DispatchModule: React.FC = () => {
             </div>
             
             <div className="p-5 max-h-[60vh] overflow-y-auto">
-              {/* --- NEW: YELLOW ERROR CARD --- */}
               {notification && notification.type === 'warning' && (
                 <div className="mb-4 p-4 rounded-xl bg-yellow-50 border border-yellow-200 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
                   <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />

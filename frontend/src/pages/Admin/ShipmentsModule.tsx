@@ -56,7 +56,9 @@ const ShipmentsModule: React.FC = () => {
     { value: 'chemicals', label: 'Chemicals' },
     { value: 'groceries', label: 'Grocery Items' },
     { value: 'furniture', label: 'Furniture' },
-    { value: 'steel items', label: 'Steel Items' }
+    { value: 'steel items', label: 'Steel Items' },
+    { value: 'textiles', label: 'Textiles' },
+    { value: 'other', label: 'Other' }
   ];
 
   // --- API CONFIG ---
